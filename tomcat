@@ -1,0 +1,31 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Java (required by Tomcat)
+RUN apt-get update && \
+    apt-get install -y default-jdk && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set Tomcat version and environment variables
+ENV TOMCAT_VERSION=9.0.108
+ENV CATALINA_HOME=/opt/tomcat
+ENV PATH=$PATH:$CATALINA_HOME/bin
+
+# Create Tomcat directory
+RUN mkdir -p /opt/tomcat
+
+# Use ADD to download and extract the Tomcat tarball
+ADD https://downloads.apache.org/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz /tmp/
+
+# Extract and clean up
+RUN tar -xzf /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz -C /opt/tomcat --strip-components=1 && \
+    rm /tmp/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
+    chmod +x /opt/tomcat/bin/*.sh
+
+# Expose Tomcat default port
+EXPOSE 8080
+
+# Start Tomcat
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]
