@@ -1,0 +1,14 @@
+# Remove old docker-compose if installed
+sudo rm /usr/local/bin/docker-compose
+
+# Download Docker Compose plugin
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+mkdir -p $DOCKER_CONFIG/cli-plugins
+curl -SL https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-$(uname -s)-$(uname -m) \
+  -o $DOCKER_CONFIG/cli-plugins/docker-compose
+
+# Make it executable
+chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+
+# Test
+docker compose version
